@@ -1,0 +1,138 @@
+-- Group 255
+-- 3/21/2025
+
+CREATE TABLE Student (
+    StudentId INT PRIMARY KEY,
+    ExternalId INT NOT NULL UNIQUE,
+    HSGraduation VARCHAR(255) NOT NULL,
+    State VARCHAR(50) NOT NULL,
+    Legal_Residence VARCHAR(255) NOT NULL  -- Month and year they became a resident; YYYYMM format for date
+);
+
+CREATE TABLE Parent (
+    StudentId INT NOT NULL,
+    ParentsState VARCHAR(50) NOT NULL,
+    ParentsResidence VARCHAR(255) NOT NULL,  -- Month and year they became a resident; YYYYMM format for date
+    PRIMARY KEY (StudentId),
+    FOREIGN KEY (StudentId) REFERENCES Student(StudentId)
+);
+
+CREATE TABLE FinancialAid (
+    FundId INT PRIMARY KEY,
+    StudentId INT NOT NULL,
+    EFC INT NOT NULL CHECK (EFC >= 0), -- Expected Financial Contribution, dollar amount rounded to the nearest dollar
+    Fundname VARCHAR(255) NOT NULL,
+    COAfirstdollaraward INT NOT NULL CHECK (COAfirstdollaraward >= 0), -- Cost of attendance for the semester
+    COAlastdollaraward INT NOT NULL CHECK (COAlastdollaraward >= 0), -- Cost of attendance for the semester (tuition only)
+    FOREIGN KEY (StudentId) REFERENCES Student(StudentId)
+);
+
+CREATE TABLE Award (
+    AwardId INT PRIMARY KEY,
+    AwardStatusCode VARCHAR(50) NOT NULL CHECK (AwardStatusCode IN ('ACCEPTED', 'DECLINED', 'PENDING', 'CANCELLED', 'UNDER REVIEW')),
+    Amount INT NOT NULL CHECK (Amount >= 0), -- Rounded to the nearest dollar
+    AcceptedAmount INT NOT NULL CHECK (AcceptedAmount >= 0), -- Rounded to the nearest dollar
+    CHECK (AcceptedAmount <= Amount) -- Accepted amount can't exceed total amount
+);
+    
+CREATE TABLE RecordUpdate (
+    AwardId INT NOT NULL,
+    ModifiedBy VARCHAR(255) NOT NULL, -- String, either system or username of the person who made the change
+    ModifiedOn TIME NOT NULL, -- The time (format HH:MM:SS) of the change
+    PRIMARY KEY (AwardId, ModifiedOn),
+    FOREIGN KEY (AwardId) REFERENCES Award(AwardId)
+);
+
+-- Student: StudentId, ExternalId, HSGraduation, State, Legal_Residence
+insert into student VALUES(16798, 3152, '6/1/2024', 'MI', '200604')
+insert into student(16798, 3152, '6/1/2024', 'MI', '200604')
+insert into student(16798, 3152, '6/1/2024', 'MI', '200604')
+insert into student(16798, 3152, '6/1/2024', 'MI', '200604')
+insert into student(16873, 3434, '1/1/2024', 'MI', '200605')
+insert into student(16873, 3434, '1/1/2024', 'MI', '200605')
+insert into student(16873, 3434, '1/1/2024', 'MI', '200605')
+insert into student(16873, 3434, '1/1/2024', 'MI', '200605')
+insert into student(16895, 3504, '6/1/2024', 'MI', '200510')
+insert into student(16895, 3504, '6/1/2024', 'MI', '200510')
+insert into student(16911, 3547, '5/1/2024', 'MI', '200504')
+insert into student(16911, 3547, '5/1/2024', 'MI', '200504')
+insert into student(16911, 3547, '5/1/2024', 'MI', '200504')
+
+-- Parent: StudentId, ParentsState, ParentsResidence
+insert into parent VALUES(16798, 'MI', '199510')
+insert into parent(16798, 'MI', '199510')
+insert into parent(16798, 'MI', '199510')
+insert into parent(16798, 'MI', '199510')
+insert into parent(16873, 'MI', '197212')
+insert into parent(16873, 'MI', '197212')
+insert into parent(16873, 'MI', '197212')
+insert into parent(16873, 'MI', '197212')
+insert into parent(16895, 'MI', '197004')
+insert into parent(16895, 'MI', '197004')
+insert into parent(16911, 'MI', '197510')
+insert into parent(16911, 'MI', '197510')
+insert into parent(16911, 'MI', '197510')
+
+-- FinancialAid: FundId, StudentId, EFC, Fundname, COAfirstdollaraward, COAlastdollaraward
+insert into FinancialAid VALUES(1009, 16798, 25645, 'LEDP', 32105, 14760)
+insert into FinancialAid(1398, 16798, 25645, 'MG13', 32105, 14760)
+insert into FinancialAid(1381, 16798, 25645, 'MI1A', 32105, 14760)
+insert into FinancialAid(1380, 16798, 25645, 'MI2A', 32105, 14760)
+insert into FinancialAid(1406, 16873, 1958, 'CMTA', 32105, 14760)
+insert into FinancialAid(1381, 16873, 1958, 'MI1A', 32105, 14760)
+insert into FinancialAid(1380, 16873, 1958, 'MI2A', 32105, 14760)
+insert into FinancialAid(2, 16873, 1958, 'PELA', 32105, 14760)
+insert into FinancialAid(980, 16895, 14739, 'CENS', 32105, 14760)
+insert into FinancialAid(986, 16895, 14739, 'CFES', 32105, 14760)
+insert into FinancialAid(1398, 16911, 23362, 'MG13', 32105, 14760)
+insert into FinancialAid(1381, 16911, 23362, 'MI1A', 32105, 14760)
+insert into FinancialAid(1380, 16911, 23362, 'MI2A', 32105, 14760)
+
+-- Award: AwardId, AwardStatusCode, Amount, AcceptedAmount
+insert into Award VALUES(43766, 'ACCEPTED', 2000, 2000)
+insert into Award(43767, 'ACCEPTED', 5000, 5000)
+insert into Award(43852, 'ACCEPTED', 2500, 2500)
+insert into Award(43851, 'ACCEPTED', 3000, 3000)
+insert into Award(44997, 'ACCEPTED', 75, 75)
+insert into Award(33744, 'ACCEPTED', 2500, 2500)
+insert into Award(33745, 'ACCEPTED', 3000, 3000)
+insert into Award(24515, 'ACCEPTED', 5435, 5435)
+insert into Award(44248, 'ACCEPTED', 14310, 14310)
+insert into Award(44249, 'ACCEPTED', 450, 450)
+insert into Award(24517, 'ACCEPTED', 5000, 5000)
+insert into Award(33746, 'ACCEPTED', 2500, 2500)
+insert into Award(33747, 'ACCEPTED', 3000, 3000)
+
+-- RecordUpdate: AwardId, ModifiedBy, ModifiedOn
+insert into RecordUpdate VALUES(43766, 'system', '5:31:43')
+insert into RecordUpdate(43767, 'system', '5:31:43')
+insert into RecordUpdate(43852, 'system', '5:31:43')
+insert into RecordUpdate(43851, 'system', '5:31:43')
+insert into RecordUpdate(44997, 'system', '9:37:08')
+insert into RecordUpdate(33744, 'system', '9:37:05')
+insert into RecordUpdate(33745, 'system', '9:37:05')
+insert into RecordUpdate(24515, 'system', '9:37:05')
+insert into RecordUpdate(44248, 'system', '5:31:43')
+insert into RecordUpdate(44249, 'system', '5:31:43')
+insert into RecordUpdate(33746, 'system', '5:31:43')
+insert into RecordUpdate(33747, 'system', '5:31:43')
+
+desc Student;
+desc Parent;
+desc FinancialAid;
+desc Award;
+desc RecordUpdate;
+
+-- Reading the result set containing all awards (student id, fund names, and award amounts) for student 16895
+SELECT s.StudentId, f.FundName, a.Amount, a.AwardStatusCode
+FROM Student s
+JOIN FinancialAid f ON s.StudentId = f.StudentId
+JOIN Award a ON f.FundId = a.AwardId
+WHERE s.StudentId = 16895;
+
+-- Alternative query if the join doesn't work (missing relationship)
+-- SELECT s.StudentId, f.FundName, a.Amount, a.AwardStatusCode
+-- FROM Student s
+-- JOIN FinancialAid f ON s.StudentId = f.StudentId
+-- CROSS JOIN Award a 
+-- WHERE s.StudentId = 16895;
